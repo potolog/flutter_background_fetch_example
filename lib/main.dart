@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background_fetch_example/services/notificationService.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:background_fetch/background_fetch.dart';
@@ -72,10 +74,47 @@ class _MyAppState extends State<MyApp> {
   bool _enabled = true;
   int _status = 0;
   List<String> _events = [];
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
+
+    // notification 설정
+    if (true) {
+      // 안드로이드 설정를 위한 Notification을 설정한 것입니다.
+      // 앱 아이콘으로 설정을 바꾸어 줄수 있고 현재 @mipmap/ic_launcher는 flutter 기본 아이콘을 사용하는 것입니다.
+      var androidSetting = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+      // ios 알림 설정 : 소리, 뱃지 등을 설정하여 줄수가 있습니다.
+      var iosSetting = IOSInitializationSettings();
+
+      // android 와 ios 설정을 통합한다.
+      var initializationSettings = InitializationSettings(
+          android: androidSetting, iOS: iosSetting);
+
+      // _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+      _flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+
+        // 알림을 눌렀을때 어플에서 실행되는 행동을 설정하는 부분입니다.
+        // 비어 있으면 아무런 액션을 하지 않는다.
+        //  onSelectNotification: onSelectNotification1(),
+        //   onSelectNotification: (String? payload) async {
+        //     if (payload != null) {
+        //       debugPrint('notification payload: $payload');
+        //       showDialog(
+        //           context: context,
+        //           builder: (_) => AlertDialog(
+        //             title: Text('Notification Payload'),
+        //             content: Text('Payload: ${payload}'),
+        //           )
+        //       );
+        //     }
+        //   }
+      );
+    }
+
     initPlatformState();
   }
 
@@ -125,7 +164,6 @@ class _MyAppState extends State<MyApp> {
       // com.x3800.visitor.task 등록
       BackgroundFetch.scheduleTask(TaskConfig(
           taskId: "com.x3800.visitor.task",
-          // delay: 10000,
           delay: 1000,
           periodic: false,
           forceAlarmManager: true,
@@ -136,7 +174,6 @@ class _MyAppState extends State<MyApp> {
       // com.x3800.visitor.calltask 등록
       BackgroundFetch.scheduleTask(TaskConfig(
           taskId: "com.x3800.visitor.calltask",
-          // delay: 10000,
           delay: 1000,
           periodic: false,
           requiredNetworkType: NetworkType.ANY,
@@ -159,6 +196,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
   }
 
+  // 백그라운드 이벤트가 발생했을 때의 처리
   void _onBackgroundFetch(String taskId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime timestamp = new DateTime.now();
@@ -168,6 +206,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _events.insert(0, "$taskId@${timestamp.toString()}");
     });
+
     // Persist fetch events in SharedPreferences
     prefs.setString(EVENTS_KEY, jsonEncode(_events));
 
@@ -189,6 +228,9 @@ class _MyAppState extends State<MyApp> {
     // IMPORTANT:  You must signal completion of your fetch task or the OS can punish your app
     // for taking too long in the background.
     BackgroundFetch.finish(taskId);
+
+    NotificationService.initialize();
+    NotificationService.instantNotification('taskId: $taskId');
   }
 
   /// This event fires shortly before your task is about to timeout.  You must finish any outstanding work and call BackgroundFetch.finish(taskId).
@@ -197,6 +239,7 @@ class _MyAppState extends State<MyApp> {
     BackgroundFetch.finish(taskId);
   }
 
+  // 백그라운드 패치 실행 여부 설정
   void _onClickEnable(enabled) {
     setState(() {
       _enabled = enabled;
@@ -221,16 +264,26 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _status = status;
     });
+
+    // Notification 알림
+    NotificationService.initialize();
+    NotificationService.instantNotification('백그라운드 상태 확인');
   }
 
-  // 백그라운드 상태 clear
+  // 이벤트 이력 삭제
   void _onClickClear() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(EVENTS_KEY);
     setState(() {
       _events = [];
     });
+
+    // Notification 알림
+    NotificationService.initialize();
+    NotificationService.instantNotification('이벤트 이력 삭제');
   }
+
+  // 화면 빌드
   @override
   Widget build(BuildContext context) {
     const EMPTY_TEXT = Center(child: Text('Waiting for fetch events.  Simulate one.\n [Android] \$ ./scripts/simulate-fetch\n [iOS] XCode->Debug->Simulate Background Fetch'));

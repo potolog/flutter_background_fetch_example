@@ -15,6 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   background_fetch: ^1.0.1
   shared_preferences: ^2.0.6
+  flutter_local_notifications: ^6.0.0
 
 dev_dependencies:
   flutter_test:

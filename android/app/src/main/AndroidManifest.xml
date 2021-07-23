@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.x3800.cc">
+    package="com.x3800.background.fetch">
    <application
-        android:label="cc"
+        android:label="플러터 백그라운드"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
