@@ -14,12 +14,12 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   var taskId = task.taskId;
   var timeout = task.timeout;
   if (timeout) {
-    print("[BackgroundFetch] Headless task timed-out 백그라운드 타스크 타임아웃 : $taskId, $DateTime.now()");
+    print("[BackgroundFetch] Headless task timed-out 백그라운드 타스크 타임아웃 : $taskId, ${DateTime.now()}");
     BackgroundFetch.finish(taskId);
     return;
   }
 
-  print("[BackgroundFetch] Headless event received 백그라운드 이벤트 수신 : $taskId, $DateTime.now()");
+  print("[BackgroundFetch] Headless event received 백그라운드 이벤트 수신 : $taskId, ${DateTime.now()}");
 
   var timestamp = DateTime.now();
 
@@ -105,7 +105,7 @@ class _MyAppState extends State<MyApp> {
         requiresDeviceIdle: false,
         requiredNetworkType: NetworkType.NONE,
       ), _onBackgroundFetch, _onBackgroundFetchTimeout);
-      print('[BackgroundFetch] configure success 설정 성공 : $status');
+      print('[BackgroundFetch] configure success 설정 성공 : $status, ${DateTime.now()}');
       setState(() {
         _status = status;
       });
@@ -122,6 +122,7 @@ class _MyAppState extends State<MyApp> {
           enableHeadless: true
       ));
 
+      // com.x3800.visitor.task 등록
       BackgroundFetch.scheduleTask(TaskConfig(
           taskId: "com.x3800.visitor.task",
           // delay: 10000,
@@ -132,8 +133,21 @@ class _MyAppState extends State<MyApp> {
           enableHeadless: true
       ));
 
+      // com.x3800.visitor.calltask 등록
+      BackgroundFetch.scheduleTask(TaskConfig(
+          taskId: "com.x3800.visitor.calltask",
+          // delay: 10000,
+          delay: 1000,
+          periodic: false,
+          requiredNetworkType: NetworkType.ANY,
+          forceAlarmManager: true,
+          stopOnTerminate: false,
+          enableHeadless: true,
+          requiresNetworkConnectivity: true,
+      ));
+
     } catch(e) {
-      print("[BackgroundFetch] configure ERROR: $e");
+      print("[BackgroundFetch] configure ERROR: $e, ${DateTime.now()}");
       setState(() {
         _status = e.toString() as int;
       });
@@ -150,7 +164,7 @@ class _MyAppState extends State<MyApp> {
     DateTime timestamp = new DateTime.now();
     // This is the fetch-event callback.
     print("[BackgroundFetch] Event received: $taskId");
-    print("[BackgroundFetch] 이벤트 수신: $taskId");
+    print("[BackgroundFetch] 이벤트 수신: $taskId, ${DateTime.now()}");
     setState(() {
       _events.insert(0, "$taskId@${timestamp.toString()}");
     });
@@ -179,7 +193,7 @@ class _MyAppState extends State<MyApp> {
 
   /// This event fires shortly before your task is about to timeout.  You must finish any outstanding work and call BackgroundFetch.finish(taskId).
   void _onBackgroundFetchTimeout(String taskId) {
-    print("[BackgroundFetch] TIMEOUT: $taskId");
+    print("[BackgroundFetch] TIMEOUT: $taskId, ${DateTime.now()}");
     BackgroundFetch.finish(taskId);
   }
 
@@ -189,25 +203,27 @@ class _MyAppState extends State<MyApp> {
     });
     if (enabled) {
       BackgroundFetch.start().then((int status) {
-        print('[BackgroundFetch] start success 시작 성공 : $status');
+        print('[BackgroundFetch] start success 시작 성공 : $status, ${DateTime.now()}');
       }).catchError((e) {
-        print('[BackgroundFetch] start FAILURE: $e');
+        print('[BackgroundFetch] start FAILURE: $e, ${DateTime.now()}');
       });
     } else {
       BackgroundFetch.stop().then((int status) {
-        print('[BackgroundFetch] stop success 정지 성공 : $status');
+        print('[BackgroundFetch] stop success 정지 성공 : $status, ${DateTime.now()}');
       });
     }
   }
 
+  // 백그라운드 상태 확인
   void _onClickStatus() async {
     int status = await BackgroundFetch.status;
-    print('[BackgroundFetch] status 상태 : $status');
+    print('[BackgroundFetch] status 상태 : $status, ${DateTime.now()}');
     setState(() {
       _status = status;
     });
   }
 
+  // 백그라운드 상태 clear
   void _onClickClear() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(EVENTS_KEY);

@@ -7,6 +7,7 @@
 		<string>com.transistorsoft.fetch</string>
 		<string>com.transistorsoft.customtask</string>
 		<string>com.x3800.visitor.task</string>
+		<string>com.x3800.visitor.calltask</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
