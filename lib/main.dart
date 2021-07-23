@@ -230,13 +230,17 @@ class _MyAppState extends State<MyApp> {
     BackgroundFetch.finish(taskId);
 
     NotificationService.initialize();
-    NotificationService.instantNotification('taskId: $taskId');
+    NotificationService.instantNotification('백그라운드 이벤트 발생', 'taskId: $taskId');
   }
 
-  /// This event fires shortly before your task is about to timeout.  You must finish any outstanding work and call BackgroundFetch.finish(taskId).
+  // This event fires shortly before your task is about to timeout.
+  // You must finish any outstanding work and call BackgroundFetch.finish(taskId).
   void _onBackgroundFetchTimeout(String taskId) {
     print("[BackgroundFetch] TIMEOUT: $taskId, ${DateTime.now()}");
     BackgroundFetch.finish(taskId);
+
+    NotificationService.initialize();
+    NotificationService.instantNotification('백그라운드 타임아웃 이벤트 발생', 'taskId: $taskId');
   }
 
   // 백그라운드 패치 실행 여부 설정
@@ -267,7 +271,7 @@ class _MyAppState extends State<MyApp> {
 
     // Notification 알림
     NotificationService.initialize();
-    NotificationService.instantNotification('백그라운드 상태 확인');
+    NotificationService.instantNotification('백그라운드 알림', '백그라운드 상태 확인');
   }
 
   // 이벤트 이력 삭제
@@ -280,7 +284,7 @@ class _MyAppState extends State<MyApp> {
 
     // Notification 알림
     NotificationService.initialize();
-    NotificationService.instantNotification('이벤트 이력 삭제');
+    NotificationService.instantNotification('백그라운드 알림', '이벤트 이력 삭제');
   }
 
   // 화면 빌드

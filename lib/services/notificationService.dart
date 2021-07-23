@@ -22,7 +22,7 @@ class NotificationService extends ChangeNotifier {
   }
 
   // Notification 표시
-  static Future instantNotification(String payload) async {
+  static Future instantNotification(String title, String body, String payload) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'channelId', 'channelName', 'channelDescription',
       importance: Importance.max,
@@ -44,8 +44,8 @@ class NotificationService extends ChangeNotifier {
 
     await _flutterLocalNotificationsPlugin.show(
       0,
-      'Background fetch 알림',
-      payload,
+      title,
+      body,
       platformChannelSpecifics,
       payload: payload,
     );

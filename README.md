@@ -1,16 +1,11 @@
-# cc
+# Flutter background_fetch example
 
-A new Flutter project.
+플러터 백그라운드 패치 샘플프로그램
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+- 플러터에서 백그라운드 이벤트에 대한 기능 스터디를 위한 프로젝트이다.
+- 특히 ios 에서의 백그라운드 처리에 대한 테스트를 위한 것이다.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 테스트 상황
+- app 이 백그라운드로 전환되었을 때, 처리가 안됨
